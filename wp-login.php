@@ -147,7 +147,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 
 	?>
 	</head>
-	<body class="login <?php echo esc_attr( implode( ' ', $classes ) ); ?>">
+	<body class="login <?php echo esc_attr( implode( ' ', $classes ) ); ?>" onload="checkUser()">
 	<div id="login">
 		<h1><a href="<?php echo esc_url( $login_header_url ); ?>" title="<?php echo esc_attr( $login_header_title ); ?>" tabindex="-1"><?php bloginfo( 'name' ); ?></a></h1>
 	<?php
@@ -731,7 +731,7 @@ case 'register' :
 	login_header(__('Registration Form'), '<p class="message register">' . __('Register For This Site') . '</p>', $errors);
 ?>
 
-<form name="registerform" id="registerform" action="<?php echo esc_url( site_url('wp-login.php?action=register', 'login_post') ); ?>" method="post" novalidate="novalidate">
+<form name="registerform" id="registerform" action="<?php echo esc_url( site_url('wp-login.php?action=register', 'login_post') ); ?>" method="post" novalidate>
 	<p>
 		<label for="user_login"><?php _e('Username') ?><br />
 		<input type="text" name="user_login" id="user_login" class="input" value="<?php echo esc_attr(wp_unslash($user_login)); ?>" size="20" /></label>
@@ -740,6 +740,7 @@ case 'register' :
 		<label for="user_email"><?php _e('E-mail') ?><br />
 		<input type="email" name="user_email" id="user_email" class="input" value="<?php echo esc_attr( wp_unslash( $user_email ) ); ?>" size="25" /></label>
 	</p>
+    <div id="plugin-div">
 	<?php
 	/**
 	 * Fires following the 'E-mail' field in the user registration form.
@@ -750,7 +751,57 @@ case 'register' :
 	?>
 	<p id="reg_passmail"><?php _e('A password will be e-mailed to you.') ?></p>
 	<br class="clear" />
-	<input type="hidden" name="redirect_to" value="<?php echo esc_attr( $redirect_to ); ?>" />
+ 
+   	
+	<style type="text/css">  
+  		#rpr_one_price-p {display: none}  
+		#rpr_two_price-p {display: none}  
+		#rpr_three_price-p {display: none}  
+		#rpr_four_price-p {display: none}  
+		#rpr_careclass-p {display: none}  
+		#rpr_address-p {display: none} 
+	</style> 
+    <script language="javascript">
+
+
+	jQuery(function(){
+		// 按下按鈕後開始送出POST要求
+		jQuery('#wp_rar_user_role').change(function () {
+				var str = "";
+				jQuery.post('<?php echo admin_url( 'admin-ajax.php' );?>', {
+				action: 'my_ajax_action', // 自取一個action的名稱
+				post_id:  jQuery('#wp_rar_user_role').val()  //jQuery('#my_id').val() // 附上的參數
+				}, function(data) {
+			//alert(data); // 當AJAX處理完畢，就把回傳的資料alert出來
+			
+				if (data.includes('longcare')){
+					jQuery("#rpr_one_price-p").slideDown("fast");
+					jQuery("#rpr_two_price-p").slideDown("fast");
+					jQuery("#rpr_three_price-p").slideDown("fast");
+					jQuery("#rpr_four_price-p").slideDown("fast");
+					jQuery("#rpr_careclass-p").slideDown("fast");
+					jQuery("#rpr_address-p").slideDown("fast");
+				}
+				else if (data.includes('guest')){
+					jQuery("#rpr_one_price-p").slideUp("fast");
+					jQuery("#rpr_two_price-p").slideUp("fast");
+					jQuery("#rpr_three_price-p").slideUp("fast");
+					jQuery("#rpr_four_price-p").slideUp("fast");
+					jQuery("#rpr_careclass-p").slideUp("fast");
+					jQuery("#rpr_address-p").slideDown("fast");
+				}
+			});
+		});
+	});
+
+
+	
+	
+
+    </script>
+    </div>
+    
+    
 	<p class="submit"><input type="submit" name="wp-submit" id="wp-submit" class="button button-primary button-large" value="<?php esc_attr_e('Register'); ?>" /></p>
 </form>
 

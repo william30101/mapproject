@@ -138,15 +138,19 @@ body {
 	float: left;
 }
 
+.mapside {
+	float: left;
+}
+
 .maplocation { 
 	width: 40%;
-	float: left;
+	height: 700;
 }
 
 
 .article {
 	width: 60%;
-	float: left;
+	float: right;
 }
 
 
@@ -481,4 +485,40 @@ padding: 10px;
 
 background–color: #ffffff;
 
+}
+
+#findborder {
+    border: 2px solid #a1a1a1;
+    padding: 10px 40px; 
+    background: #dddddd;
+    width: 300px;
+    border-radius: 25px;
+}
+
+.btnhvr {
+	border: 2px solid #a1a1a1;
+	border-radius: 25px;
+	background:gray;
+    color: black;
+    font-size: 120%;
+    width: 300px;
+}
+
+.btnhvr:hover {
+	background:green;
+}
+
+.mobile-menu {
+	float: left;
+	margin-left: 10px;
+}
+
+.priceOption {
+	float: left;
+	margin-bottom: 10px;
+}
+
+.classOption {
+	float: left;
+	//margin-top: 10px;
 }

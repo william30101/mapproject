@@ -1,16 +1,64 @@
 <?php
 /*
-Template Name: MAP
+Template Name: MAPSearch
 */
 get_header();
 ?>
 <h1>
-  <?php the_title(); ?>
+  <?php the_title(); 
+  $bedshow=false;?>
+
+<?php
+  // Nav Menu Dropdown Class
+include_once( get_template_directory()  . '/lib/classes/nav-menu-dropdown.php' );
+?>
+
 </h1>
 <div class="content">
-<div class="mapside">
-  <div id="map" style="width: 400px; height: 600px; " class="maplocation" >ajwoefejio </div>
-
+    <div class="mapside">
+          <div id="map" style="width: 400px; height: 600px; " class="maplocation" ></div>
+          <div id="findborder" style="margin-top: 10px;">
+                  <label class="layer-wizard-search-label">
+                    <div class="priceOption">價格 : </div>
+                    
+                    <?php
+					wp_nav_menu( array(
+							// 'theme_location' => 'mobile',
+							'menu'           => 'priceOption',
+							'walker'         => new Walker_Nav_Menu_Dropdown(),
+							'items_wrap'     => '<div class="mobile-menu"><form><select id="search-price">%3$s</select></form></div>',
+					) );
+					?>
+                    <!--
+                     <select name="search-price">
+                            　<option value="0">不限</option>
+                            　<option value="1">三萬以下</option>
+                            　<option value="2">三萬-四萬</option>
+                            　<option value="3">四萬以上</option>
+                        </select>-->
+                        <br>
+                        <div style="clear:both"></div>
+                    <div class="classOption">類別 :</div>
+                    <?php
+					wp_nav_menu( array(
+							// 'theme_location' => 'mobile',
+							'menu'           => 'careoption',
+							'walker'         => new Walker_Nav_Menu_Dropdown(),
+							'items_wrap'     => '<div class="mobile-menu"><form><select id="search-care">%3$s</select></form></div>',
+					) );
+					?>
+                   <!-- <select name="search-class">
+                        　<option value="care">護理</option>
+                        　<option value="longCare">長照</option>
+                        　<option value="maintenance">養護</option>
+                        　<option value="rescue">安養</option>
+                        　<option value="sunshine">日照</option>
+                    </select>-->
+                    <br>
+                    <?php if ($bedshow) echo "空床 : "?> <input type="checkbox" id="search-havebed" hidden="true"><br>
+                    <button class="btnhvr" onClick="searchMarker()">Search</button>
+                  </label> 
+            </div>
         </div>
   	
   
@@ -24,10 +72,7 @@ $wp_query = new WP_Query( $args );
 $NUM = 0;
 
 ?>
-
-
   <script type="text/javascript">
-var templateUrl = '<?= get_bloginfo("template_url"); ?>';
 
 /* Improve user address add marker start*/
 	var g_loc;
@@ -37,11 +82,13 @@ var templateUrl = '<?= get_bloginfo("template_url"); ?>';
 	var g_townName = [];
 	//var lo2;
 
+
+
+
  	<?php 
 		 $argsuser = array(
 			'role'         => 'subscriber',
 		 ); 
-
 
  		$roles = get_users( $argsuser ); 
 		$i = 0;
@@ -56,11 +103,7 @@ var templateUrl = '<?= get_bloginfo("template_url"); ?>';
 		}
 	?>
 
-
-
-
 /* Improve user address add marker end*/
-
 
     var locations = [<?php while( $wp_query->have_posts() ){
 	$wp_query->the_post();
@@ -207,10 +250,21 @@ var templateUrl = '<?= get_bloginfo("template_url"); ?>';
   /*FusionTable for api key usage End*/
 
 
-function changeMap_0() {
+	function searchMarker() {
       var whereClause;
-      var searchString = document.getElementById('search-string_0').value.replace(/'/g, "\\'");
-      if (searchString != '--Select--') {
+      var searchString = document.getElementById('search-care').value.replace(/'/g, "\\'");
+	  
+	  // We find last slash char , substring we need tag.
+	  // ex : http://localhost/wordpress/category/rescue/
+	  // only need rescue this tag for codeing.
+	  
+	  var tagIndex = searchString.lastIndexOf('/',searchString.length-2 );
+	  tagIndex = tagIndex + 1; // We don't need '/'rescue this slash.
+	  var tagName = searchString.substring(tagIndex,searchString.length-1);
+	  //alert(searchString+'  /index=' + tagIndex);
+	 // alert(tagName);
+	  
+      /*if (searchString != '--Select--') {
         whereClause = "'county' CONTAINS IGNORING CASE '" + searchString + "'";
       }
 	  layer_0 = new google.maps.FusionTablesLayer({
@@ -222,7 +276,7 @@ function changeMap_0() {
   		});
 	  
 	  
-	  layer_0.setMap(map);
+	  layer_0.setMap(map);*/
     }
 
 
@@ -520,18 +574,18 @@ function changeMap_0() {
 			$wp_query_args_careagency = new WP_Query( $args_careagency );
 
 			  $args_caretech = array(
-	  'tag'		=> 'caretech',
-	  'showposts'	=> 1
-  );
-// query
-$wp_query_args_caretech = new WP_Query( $args_caretech );
+				  'tag'		=> 'caretech',
+				  'showposts'	=> 1
+			  );
+		// query
+		$wp_query_args_caretech = new WP_Query( $args_caretech );
 
 			  $args_carearticle = array(
-	  'tag'		=> 'carearticle',
-	  'showposts'	=> 1
-  );
-// query
-$wp_query_args_carearticle = new WP_Query( $args_carearticle );
+				  'tag'		=> 'carearticle',
+				  'showposts'	=> 1
+			  );
+	// query
+	$wp_query_args_carearticle = new WP_Query( $args_carearticle );
 
 		?>
     <?php while ( $wp_query_args_careagency->have_posts() ) : $wp_query_args_careagency->the_post(); ?>

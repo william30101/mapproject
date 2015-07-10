@@ -203,31 +203,120 @@ function insert_fb_in_head() {
 add_action( 'wp_head', 'insert_fb_in_head', 10 );
 
 register_sidebar(array(
-'name' => 'footerfield1',
-'id' => 'footer-1',
-'description' => 'First footer widget area',
-'before_widget' => '<div id="footer-widget1″>',
-'after_widget' => '</div>',
-'before_title' => '<h2>',
-'after_title' => '</h2>',
+	'name' => 'footerfield1',
+	'id' => 'footer-1',
+	'description' => 'First footer widget area',
+	'before_widget' => '<div id="footer-widget1″>',
+	'after_widget' => '</div>',
+	'before_title' => '<h2>',
+	'after_title' => '</h2>',
 ));
 register_sidebar(array(
-'name' => 'footerfield2',
-'id' => 'footer-2',
-'description' => 'Second footer widget area',
-'before_widget' => '<div id="footer-widget2″>',
-'after_widget' => '</div>',
-'before_title' => '<h2>',
-'after_title' => '</h2>',
+	'name' => 'footerfield2',
+	'id' => 'footer-2',
+	'description' => 'Second footer widget area',
+	'before_widget' => '<div id="footer-widget2″>',
+	'after_widget' => '</div>',
+	'before_title' => '<h2>',
+	'after_title' => '</h2>',
 ));
 register_sidebar(array(
-'name' => 'footerfield3',
-'id' => 'footer-3',
-'description' => 'Third footer widget area',
-'before_widget' => '<div id="footer-widget3″>',
-'after_widget' => '</div>',
-'before_title' => '<h2>',
-'after_title' => '</h2>',
+	'name' => 'footerfield3',
+	'id' => 'footer-3',
+	'description' => 'Third footer widget area',
+	'before_widget' => '<div id="footer-widget3″>',
+	'after_widget' => '</div>',
+	'before_title' => '<h2>',
+	'after_title' => '</h2>',
 ));
+
+function wps_change_role_name() {
+  global $wp_roles;
+  if ( ! isset( $wp_roles ) )
+   $wp_roles = new WP_Roles();
+  $wp_roles->roles['longcare']['name'] = '長照單位';
+  $wp_roles->role_names['longcare'] = '長照單位';
+  
+   $wp_roles->roles['guest']['name'] = '一般使用者';
+  $wp_roles->role_names['guest'] = '一般使用者';
+}
+add_action('init', 'wps_change_role_name');
+
+
+// Add Password, Repeat Password and Are You Human fields to WordPress registration form
+// http://wp.me/p1Ehkq-gn
+
+add_action( 'register_form', 'ts_show_extra_register_fields' );
+function ts_show_extra_register_fields(){
+?>
+	<p>
+		<label for="password">Password<br/>
+		<input id="password" class="input" type="password" tabindex="30" size="25" value="" name="password" />
+		</label>
+	</p>
+	<p>
+		<label for="repeat_password">Repeat password<br/>
+		<input id="repeat_password" class="input" type="password" tabindex="40" size="25" value="" name="repeat_password" />
+		</label>
+	</p>
+<?php
+}
+
+// Check the form for errors
+add_action( 'register_post', 'ts_check_extra_register_fields', 10, 3 );
+function ts_check_extra_register_fields($login, $email, $errors) {
+	if ( $_POST['password'] !== $_POST['repeat_password'] ) {
+		$errors->add( 'passwords_not_matched', "<strong>ERROR</strong>: Passwords must match" );
+	}
+	if ( strlen( $_POST['password'] ) < 8 ) {
+		$errors->add( 'password_too_short', "<strong>ERROR</strong>: Passwords must be at least eight characters long" );
+	}
+}
+?>
+
+<?php
+// Storing WordPress user-selected password into database on registration
+// http://wp.me/p1Ehkq-gn
+
+add_action( 'user_register', 'ts_register_extra_fields', 100 );
+function ts_register_extra_fields( $user_id ){
+	$userdata = array();
+
+	$userdata['ID'] = $user_id;
+	if ( $_POST['password'] !== '' ) {
+		$userdata['user_pass'] = $_POST['password'];
+	}
+	$new_user_id = wp_update_user( $userdata );
+}
+?>
+
+<?php
+// Editing WordPress registration confirmation message
+// http://wp.me/p1Ehkq-gn
+
+add_filter( 'gettext', 'ts_edit_password_email_text' );
+function ts_edit_password_email_text ( $text ) {
+	if ( $text == 'A password will be e-mailed to you.' ) {
+		$text = 'If you leave password fields empty one will be generated for you. Password must be at least eight characters long.';
+	}
+	return $text;
+}
+
+add_action( 'wp_ajax_my_ajax_action', 'ajax_action_stuff' ); // 針對已登入的使用者
+add_action( 'wp_ajax_nopriv_my_ajax_action', 'ajax_action_stuff' ); // 針對未登入的使用者
+function ajax_action_stuff() {
+	$post_id = $_POST['post_id']; // 從ajax POST的請求取得的參數資料
+	echo $post_id; // 單純的印出來，如此前端就會收到
+	die(); // 一定要加這行，才會完整的處理ajax請求
+}
+
+
+function add_scripts() {
+	wp_deregister_script( 'jquery' );
+	wp_register_script( 'jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
+	wp_enqueue_script( 'jquery' );
+}
+ 
+add_action('wp_enqueue_scripts', 'add_scripts');
 
 ?>

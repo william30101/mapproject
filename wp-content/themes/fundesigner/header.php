@@ -25,6 +25,5 @@
 				</nav>
                 
                 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-                <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
                 
 			</header>
